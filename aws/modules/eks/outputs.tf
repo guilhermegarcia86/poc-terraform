@@ -23,7 +23,7 @@ users:
       args:
         - "token"
         - "-i"
-        - "${aws_eks_cluster.cluster.name}"
+        - "${var.aws-user-iam-auth}"
 KUBECONFIG
 }
 

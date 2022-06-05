@@ -1,49 +1,5 @@
-resource "aws_vpc" "programadev-vpc" {
-  cidr_block = "10.0.0.0/16"
-  tags = {
-    Name = "${var.prefix}-vpc"
-  }
-}
-
-data "aws_availability_zones" "available" {}
-
-resource "aws_subnet" "subnets" {
-  count = 2
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  vpc_id = aws_vpc.programadev-vpc.id
-  cidr_block = "10.0.${count.index}.0/24"
-  map_public_ip_on_launch = true
-    tags = {
-    Name = "${var.prefix}-subnet-${count.index}"
-  }
-}
-
-resource "aws_internet_gateway" "programadev-igw" {
-  vpc_id = aws_vpc.programadev-vpc.id
-  tags = {
-    Name = "${var.prefix}-igw"
-  }
-}
-
-resource "aws_route_table" "programadev-rtb" {
-  vpc_id = aws_vpc.programadev-vpc.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.programadev-igw.id
-  } 
-  tags = {
-    Name = "${var.prefix}-rtb"
-  }
-}
-
-resource "aws_route_table_association" "programadev-rtb-association" {
-  count = 2
-  route_table_id = aws_route_table.programadev-rtb.id
-  subnet_id = aws_subnet.subnets.*.id[count.index]
-}
-
 resource "aws_security_group" "programadev-sg" {
-  vpc_id = aws_vpc.programadev-vpc.id
+  vpc_id = var.vpc_id
   tags = {
     Name = "${var.prefix}-sg"
   }
@@ -94,7 +50,7 @@ resource "aws_eks_cluster" "cluster" {
   role_arn = aws_iam_role.cluster.arn
   enabled_cluster_log_types = ["api","audit"]
   vpc_config {
-    subnet_ids = aws_subnet.subnets[*].id
+    subnet_ids = var.subnet_ids
     security_group_ids = [aws_security_group.programadev-sg.id]
   }
   depends_on = [
@@ -141,7 +97,7 @@ resource "aws_eks_node_group" "node-1" {
   cluster_name = aws_eks_cluster.cluster.name
   node_group_name = "node-1"
   node_role_arn = aws_iam_role.node.arn
-  subnet_ids = aws_subnet.subnets[*].id
+  subnet_ids = var.subnet_ids
   instance_types = ["t3.micro"]
   scaling_config {
     desired_size = var.desired_size
