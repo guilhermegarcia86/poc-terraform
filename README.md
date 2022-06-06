@@ -2,7 +2,7 @@ Provisionamento de infraestrutura na **AWS** utilizando **Terraform**.
 
 Este projeto irá criar uma **VPC** e um serviço **EKS** na **AWS**.
 
-## :rocket: Technology
+## :rocket: Tecnologias
 
 <div align="center">
 
@@ -14,6 +14,11 @@ Este projeto irá criar uma **VPC** e um serviço **EKS** na **AWS**.
 ## Instalação
 
 Necessário ter instalado na máquina o *cli* do [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli), também necessário ter *cli* da [aws](https://docs.aws.amazon.com/pt_br/cli/latest/userguide/getting-started-install.html), para as configurações do **EKS** também é necessário ter o [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html) instalado e por fim o [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+
+Após a instalação é necessário fazer a configuração do usuário **AWS** que possua as permissões necessárias:
+```bash
+aws configure
+```
 
 *Opcional ter um bucket S3, caso não queira essa opção é necessário alterar o arquivo providers.tf na raiz do projeto /aws e remover o objeto backend que será gerado localmente o arquivo terraform.tfstate
 
